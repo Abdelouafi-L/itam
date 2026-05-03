@@ -11,7 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+
+        // Register our custom role middleware with the alias 'role'
+        // This lets us use: Route::middleware('role:Administrateur')
+        // Raw PHP equivalent: your manual role check at top of each file
+        $middleware->alias([
+            'role' => \App\Http\Middleware\CheckRole::class,
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

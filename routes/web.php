@@ -45,10 +45,61 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])
 /*
 |--------------------------------------------------------------------------
 | Protected routes — login required
-|--------------------------------------------------------------------------*/
+|--------------------------------------------------------------------------
+*/
 
+// Routes accessible by ALL authenticated users
 Route::middleware('auth')->group(function () {
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+});
+
+// Routes for Administrateur only
+Route::middleware(['auth', 'role:Administrateur'])->group(function () {
+
+    // User management (RF - coming soon)
+    Route::get('/users', function () {
+        return 'Gestion des utilisateurs — Administrateur only';
+    })->name('users.index');
+
+    // System configuration (RF - coming soon)
+    Route::get('/configuration', function () {
+        return 'Configuration — Administrateur only';
+    })->name('configuration');
+
+});
+
+// Routes for Administrateur and Technicien
+Route::middleware(['auth', 'role:Administrateur,Technicien'])
+    ->group(function () {
+
+    // Equipment management (RF-06 to RF-11 — coming soon)
+    Route::get('/equipements', function () {
+        return 'Gestion des équipements — Admin + Tech';
+    })->name('equipements.index');
+
+    // Assignments (RF-12 to RF-16 — coming soon)
+    Route::get('/affectations', function () {
+        return 'Affectations — Admin + Tech';
+    })->name('affectations.index');
+
+    // Maintenance (RF-21 to RF-23 — coming soon)
+    Route::get('/maintenance', function () {
+        return 'Maintenance — Admin + Tech';
+    })->name('maintenance.index');
+
+});
+
+// Routes for Administrateur and Manager
+Route::middleware(['auth', 'role:Administrateur,Manager'])
+    ->group(function () {
+
+    // Reporting (RF-24 to RF-28 — coming soon)
+    Route::get('/rapports', function () {
+        return 'Rapports — Admin + Manager';
+    })->name('rapports.index');
+
 });
