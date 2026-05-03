@@ -91,6 +91,9 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
         return 'Maintenance — Admin + Tech';
     })->name('maintenance.index');
 
+    // Category management
+    Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+
 });
 
 // Routes for Administrateur and Manager
