@@ -98,6 +98,15 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
 
     Route::resource('licenses', \App\Http\Controllers\LicenseController::class);
 
+    // Assignment CRUD
+    Route::resource('assignments',
+        \App\Http\Controllers\AssignmentController::class);
+
+    // Return asset — RF-14
+    Route::post('assignments/{assignment}/return',
+        [\App\Http\Controllers\AssignmentController::class, 'returnAsset'])
+        ->name('assignments.return');
+
 });
 
 // Routes for Administrateur and Manager
@@ -109,4 +118,11 @@ Route::middleware(['auth', 'role:Administrateur,Manager'])
         return 'Rapports — Admin + Manager';
     })->name('rapports.index');
 
+});
+
+// Employé — own assignments only
+Route::middleware(['auth', 'role:Employé'])->group(function () {
+    Route::get('/mes-affectations', function () {
+        return redirect()->route('assignments.index');
+    })->name('mes-affectations');
 });
