@@ -96,6 +96,8 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
 
     Route::resource('products', \App\Http\Controllers\ProductController::class);
 
+    Route::resource('licenses', \App\Http\Controllers\LicenseController::class);
+
 });
 
 // Routes for Administrateur and Manager
