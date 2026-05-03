@@ -94,6 +94,8 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
     // Category management
     Route::resource('categories', \App\Http\Controllers\CategoryController::class);
 
+    Route::resource('products', \App\Http\Controllers\ProductController::class);
+
 });
 
 // Routes for Administrateur and Manager
