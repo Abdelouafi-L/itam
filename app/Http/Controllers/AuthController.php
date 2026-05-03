@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use App\Models\Employee;
 use App\Models\Role;
 use App\Models\Department;
+use Illuminate\Support\Facades\Password;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -199,19 +201,89 @@ class AuthController extends Controller
 
     /**
      * Handle forgot password form submission.
-     * Placeholder — implemented after mail is configured
+     * Sends reset email if account exists.
+     * Raw PHP equivalent: your forgot-password.php processing $_POST
      */
     public function sendResetLink(Request $request)
     {
-        return back()->with('success', 'Si ce compte existe, un email a été envoyé.');
+        // Step 1 — Validate email format
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        // Step 2 — Find the employee by email
+        // We look in employees table, not users table
+        $employee = Employee::where('email', $request->email)->first();
+
+        // Step 3 — Always return success message even if email not found
+        // Security best practice: never reveal if an email exists
+        // Raw PHP equivalent: your intentional vague response
+        if (!$employee || !$employee->hasAccount()) {
+            return back()->with('success',
+                'Si ce compte existe, un lien de réinitialisation 
+                a été envoyé à votre adresse email.'
+            );
+        }
+
+        // Step 4 — Send the reset link via Laravel's Password broker
+        // This generates a token, stores it, and sends the notification
+        $status = Password::sendResetLink(
+            ['email' => $request->email]
+        );
+
+        return back()->with('success',
+            'Si ce compte existe, un lien de réinitialisation 
+            a été envoyé à votre adresse email.'
+        );
     }
 
     /**
      * Handle password reset form submission.
-     * Placeholder — implemented after mail is configured
+     * Raw PHP equivalent: reset-password.php processing $_POST
      */
     public function resetPassword(Request $request)
     {
-        return back()->with('error', 'Fonctionnalité en cours de configuration.');
+        // Step 1 — Validate input
+        $request->validate([
+            'token'    => ['required'],
+            'email'    => ['required', 'email'],
+            'password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        // Step 2 — Attempt the password reset
+        // Laravel verifies: token exists, token not expired,
+        // email matches token, then updates password automatically
+        $status = Password::reset(
+            $request->only([
+                'email', 'password', 'password_confirmation', 'token'
+            ]),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => \Illuminate\Support\Facades\Hash::make(
+                                    $password
+                                ),
+                ])->save();
+
+                // Update last_login timestamp
+                $user->forceFill([
+                    'last_login' => now(),
+                ])->save();
+            }
+        );
+
+        // Step 3 — Handle result
+        if ($status === Password::PasswordReset) {
+            return redirect()
+                ->route('login')
+                ->with('success',
+                    'Mot de passe réinitialisé avec succès. 
+                    Vous pouvez maintenant vous connecter.'
+                );
+        }
+
+        // Step 4 — Reset failed (invalid/expired token)
+        return back()->withErrors([
+            'email' => 'Ce lien de réinitialisation est invalide ou expiré.'
+        ]);
     }
 }

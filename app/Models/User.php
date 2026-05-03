@@ -169,4 +169,21 @@ class User extends Authenticatable
     {
         return $this->hasRole('Manager');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Password Reset
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Send password reset notification.
+     * Overrides Laravel's default reset email with our French version.
+     * Raw PHP equivalent: your Mailer::sendResetEmail() method
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
+
 }
