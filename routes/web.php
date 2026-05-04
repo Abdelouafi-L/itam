@@ -70,6 +70,11 @@ Route::middleware(['auth', 'role:Administrateur'])->group(function () {
         return 'Configuration — Administrateur only';
     })->name('configuration');
 
+    // RF-23 — Retire asset — Admin only
+    Route::post('hardware/{hardware}/retire',
+        [\App\Http\Controllers\MaintenanceController::class, 'retire'])
+        ->name('hardware.retire');
+
 });
 
 // Routes for Administrateur and Technicien
@@ -106,6 +111,10 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
     Route::post('assignments/{assignment}/return',
         [\App\Http\Controllers\AssignmentController::class, 'returnAsset'])
         ->name('assignments.return');
+
+    // Maintenance CRUD
+    Route::resource('maintenances',
+        \App\Http\Controllers\MaintenanceController::class);
 
 });
 
