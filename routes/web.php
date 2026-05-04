@@ -51,9 +51,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])
 // Routes accessible by ALL authenticated users
 Route::middleware('auth')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard',
+        [\App\Http\Controllers\DashboardController::class, 'index'])
+        ->name('dashboard');
 
 });
 
