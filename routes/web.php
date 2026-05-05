@@ -122,10 +122,48 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
 Route::middleware(['auth', 'role:Administrateur,Manager'])
     ->group(function () {
 
-    // Reporting (RF-24 to RF-28 — coming soon)
-    Route::get('/rapports', function () {
-        return 'Rapports — Admin + Manager';
-    })->name('rapports.index');
+    // Reports — RF-25, RF-26, RF-27, RF-28
+    Route::prefix('rapports')->name('rapports.')->group(function () {
+
+        // Replace the placeholder route with real ones
+        Route::get('inventaire',
+            [\App\Http\Controllers\ReportController::class, 'inventory'])
+            ->name('inventory');
+
+        Route::get('inventaire/pdf',
+            [\App\Http\Controllers\ReportController::class, 'inventoryPdf'])
+            ->name('inventory.pdf');
+
+        Route::get('inventaire/csv',
+            [\App\Http\Controllers\ReportController::class, 'inventoryCsv'])
+            ->name('inventory.csv');
+
+        Route::get('licences',
+            [\App\Http\Controllers\ReportController::class, 'licenses'])
+            ->name('licenses');
+
+        Route::get('licences/pdf',
+            [\App\Http\Controllers\ReportController::class, 'licensesPdf'])
+            ->name('licenses.pdf');
+
+        Route::get('licences/csv',
+            [\App\Http\Controllers\ReportController::class, 'licensesCsv'])
+            ->name('licenses.csv');
+
+        Route::get('maintenances',
+            [\App\Http\Controllers\ReportController::class, 'maintenances'])
+            ->name('maintenances');
+
+        Route::get('maintenances/pdf',
+            [\App\Http\Controllers\ReportController::class,
+            'maintenancesPdf'])
+            ->name('maintenances.pdf');
+
+        Route::get('maintenances/csv',
+            [\App\Http\Controllers\ReportController::class,
+            'maintenancesCsv'])
+            ->name('maintenances.csv');
+    });
 
 });
 
