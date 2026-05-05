@@ -16,6 +16,9 @@
 
     {{-- Page specific styles --}}
     @stack('styles')
+
+    {{-- Page specific styles --}}
+    @stack('styles')
 </head>
 <body class="bg-light">
 

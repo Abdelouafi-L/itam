@@ -60,111 +60,127 @@
 
     {{-- KPI Cards --}}
     <div class="row g-4 mb-4">
+
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between
-                                align-items-start">
-                        <div>
-                            <p class="text-muted small mb-1">
-                                Total produits
-                            </p>
-                            <h3 class="fw-bold mb-0">
-                                {{ $totalProducts }}
-                            </h3>
-                            <p class="text-muted small mb-0">
-                                {{ $totalItems }} unités
-                            </p>
-                        </div>
-                        <div class="bg-primary bg-opacity-10
-                                    rounded p-2">
-                            <i class="bi bi-box-seam fs-4
-                                      text-primary"></i>
+            <a href="{{ route('products.index') }}"
+            class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100
+                            card-hover">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                                    align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">
+                                    Total produits
+                                </p>
+                                <h3 class="fw-bold mb-0 text-dark">
+                                    {{ $totalProducts }}
+                                </h3>
+                                <p class="text-muted small mb-0">
+                                    {{ $totalItems }} unités
+                                </p>
+                            </div>
+                            <div class="bg-primary bg-opacity-10
+                                        rounded p-2">
+                                <i class="bi bi-box-seam fs-4
+                                        text-primary"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between
-                                align-items-start">
-                        <div>
-                            <p class="text-muted small mb-1">
-                                Disponibles
-                            </p>
-                            <h3 class="fw-bold mb-0 text-success">
-                                {{ $totalAvailable }}
-                            </h3>
-                            <p class="text-muted small mb-0">
-                                unités en stock
-                            </p>
-                        </div>
-                        <div class="bg-success bg-opacity-10
-                                    rounded p-2">
-                            <i class="bi bi-check-circle fs-4
-                                      text-success"></i>
+            <a href="{{ route('products.index') }}?availability=available"
+            class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                                    align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">
+                                    Disponibles
+                                </p>
+                                <h3 class="fw-bold mb-0 text-success">
+                                    {{ $totalAvailable }}
+                                </h3>
+                                <p class="text-muted small mb-0">
+                                    unités en stock
+                                </p>
+                            </div>
+                            <div class="bg-success bg-opacity-10
+                                        rounded p-2">
+                                <i class="bi bi-check-circle fs-4
+                                        text-success"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between
-                                align-items-start">
-                        <div>
-                            <p class="text-muted small mb-1">
-                                Affectés
-                            </p>
-                            <h3 class="fw-bold mb-0 text-warning">
-                                {{ $totalAssigned }}
-                            </h3>
-                            <p class="text-muted small mb-0">
-                                unités assignées
-                            </p>
-                        </div>
-                        <div class="bg-warning bg-opacity-10
-                                    rounded p-2">
-                            <i class="bi bi-people fs-4
-                                      text-warning"></i>
+            <a href="{{ route('assignments.index') }}"
+            class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                                    align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">
+                                    Affectés
+                                </p>
+                                <h3 class="fw-bold mb-0 text-warning">
+                                    {{ $totalAssigned }}
+                                </h3>
+                                <p class="text-muted small mb-0">
+                                    unités assignées
+                                </p>
+                            </div>
+                            <div class="bg-warning bg-opacity-10
+                                        rounded p-2">
+                                <i class="bi bi-people fs-4
+                                        text-warning"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between
-                                align-items-start">
-                        <div>
-                            <p class="text-muted small mb-1">
-                                Coût maintenance
-                            </p>
-                            <h3 class="fw-bold mb-0 text-danger">
-                                {{ number_format(
-                                    $totalMaintenanceCost, 0
-                                ) }}
-                            </h3>
-                            <p class="text-muted small mb-0">
-                                MAD total
-                            </p>
-                        </div>
-                        <div class="bg-danger bg-opacity-10
-                                    rounded p-2">
-                            <i class="bi bi-wrench fs-4
-                                      text-danger"></i>
+            <a href="{{ Auth::user()->isAdmin() || Auth::user()->isManager()
+                ? route('rapports.maintenances')
+                : route('maintenances.index') }}"
+            class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 card-hover">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between
+                                    align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">
+                                    Coût maintenance
+                                </p>
+                                <h3 class="fw-bold mb-0 text-danger">
+                                    {{ number_format(
+                                        $totalMaintenanceCost, 0) }}
+                                </h3>
+                                <p class="text-muted small mb-0">
+                                    MAD total
+                                </p>
+                            </div>
+                            <div class="bg-danger bg-opacity-10
+                                        rounded p-2">
+                                <i class="bi bi-wrench fs-4
+                                        text-danger"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         </div>
+
     </div>
 
     {{-- Charts Row --}}
@@ -314,6 +330,19 @@
 
 </div>
 @endsection
+
+@push('styles')
+<style>
+    .card-hover {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
+    }
+    .card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12) !important;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
