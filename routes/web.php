@@ -60,14 +60,12 @@ Route::middleware('auth')->group(function () {
 // Routes for Administrateur only
 Route::middleware(['auth', 'role:Administrateur'])->group(function () {
 
-    // User management (RF - coming soon)
     Route::get('/users', function () {
-        return 'Gestion des utilisateurs — Administrateur only';
+        return view('admin.users');
     })->name('users.index');
 
-    // System configuration (RF - coming soon)
     Route::get('/configuration', function () {
-        return 'Configuration — Administrateur only';
+        return view('admin.configuration');
     })->name('configuration');
 
     // RF-23 — Retire asset — Admin only
