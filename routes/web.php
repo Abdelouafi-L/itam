@@ -60,9 +60,10 @@ Route::middleware('auth')->group(function () {
 // Routes for Administrateur only
 Route::middleware(['auth', 'role:Administrateur'])->group(function () {
 
-    Route::get('/users', function () {
-        return view('admin.users');
-    })->name('users.index');
+    // User management
+    Route::resource('users',
+        \App\Http\Controllers\UserController::class)
+        ->except(['show']);
 
     Route::get('/configuration', function () {
         return view('admin.configuration');
