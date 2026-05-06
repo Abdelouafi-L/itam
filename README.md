@@ -1,58 +1,234 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ITAM — Système de Gestion de Parc Informatique
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web de gestion du parc informatique développée avec Laravel 13.
+Projet de fin de formation — ISTA Med Elfassi — Avril 2026.
 
-## About Laravel
+**Étudiant:** Abdelouafi Louardi  
+**Encadrant:** Mr Anwar  
+**Formation:** Développement Web & Logiciel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Technologies utilisées
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Composant       | Technologie             |
+| --------------- | ----------------------- |
+| Backend         | PHP 8.4 + Laravel 13    |
+| Base de données | MySQL 8                 |
+| Frontend        | Bootstrap 5 + Chart.js  |
+| Serveur local   | Laravel Herd (Nginx)    |
+| Export PDF      | barryvdh/laravel-dompdf |
+| Email local     | Mailpit                 |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Fonctionnalités
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Authentification (RF-01 à RF-05)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Inscription, connexion, déconnexion sécurisée
+- Réinitialisation du mot de passe par email
+- Limitation à 5 tentatives de connexion
+- Expiration de session après inactivité
+- Protection CSRF sur tous les formulaires
 
-## Agentic Development
+### Gestion des équipements (RF-06 à RF-11)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- CRUD complet pour les catégories et produits
+- Différenciation Hardware / Software
+- Gestion du stock par quantité
+- Historique complet des affectations
+
+### Affectations (RF-12 à RF-16)
+
+- Affectation d'équipements aux employés
+- Vérification de disponibilité avant affectation
+- Workflow de retour avec mise à jour du stock
+- Vue personnalisée par rôle
+
+### Licences logicielles (RF-17 à RF-20)
+
+- Suivi des sièges utilisés / disponibles
+- Alertes automatiques à 30 jours d'expiration
+- Notification email automatique quotidienne
+
+### Maintenance (RF-21 à RF-23)
+
+- Enregistrement des interventions
+- Suivi des coûts de maintenance
+- Retrait définitif d'équipement (irréversible)
+
+### Reporting (RF-24 à RF-28)
+
+- Tableau de bord avec statistiques en temps réel
+- Rapport d'inventaire des actifs (filtrable)
+- Rapport de conformité des licences
+- Rapport des coûts de maintenance
+- Export PDF et CSV pour chaque rapport
+
+---
+
+## Rôles et permissions
+
+| Module               | Administrateur | Technicien | Manager | Employé |
+| -------------------- | :------------: | :--------: | :-----: | :-----: |
+| Tableau de bord      |       ✅       |     ✅     |   ✅    |   ✅    |
+| Gestion utilisateurs |       ✅       |     ❌     |   ❌    |   ❌    |
+| Équipements          |       ✅       |     ✅     |   👁    |   👁    |
+| Affectations         |       ✅       |     ✅     |   👁    |  👁\*   |
+| Licences             |       ✅       |     ✅     |   👁    |   ❌    |
+| Maintenance          |       ✅       |     ✅     |   👁    |   ❌    |
+| Rapports             |       ✅       |     ❌     |   ✅    |   ❌    |
+| Configuration        |       ✅       |     ❌     |   ❌    |   ❌    |
+
+\*L'employé voit uniquement ses propres affectations
+
+---
+
+## Installation
+
+### Prérequis
+
+- PHP 8.3 ou supérieur
+- Composer
+- MySQL 8
+- Node.js 18+
+- Laravel Herd (recommandé) ou tout serveur Nginx/Apache
+
+### Étapes d'installation
+
+**1 — Cloner le dépôt**
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/Abdelouafi-L/itam.git
+cd itam
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**2 — Installer les dépendances PHP**
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**3 — Installer les dépendances JavaScript**
 
-## Code of Conduct
+```bash
+npm install
+npm run build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**4 — Configurer l'environnement**
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Ouvrir `.env` et configurer la base de données :
 
-## License
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=itam
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Configurer l'email (Mailpit pour le développement) :
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_FROM_ADDRESS="noreply@techcorp.ma"
+MAIL_FROM_NAME="ITAM TechCorp"
+```
+
+**5 — Créer la base de données**
+
+```bash
+mysql -u root -e "CREATE DATABASE itam CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+**6 — Exécuter les migrations et les seeders**
+
+```bash
+php artisan migrate --seed
+```
+
+**7 — Démarrer le serveur**
+
+Avec Laravel Herd — le site est automatiquement disponible à : http://itam.test
+
+Sans Herd :
+
+```bash
+php artisan serve
+```
+
+Puis ouvrir `http://localhost:8000`
+
+---
+
+## Comptes de démonstration
+
+| Rôle           | Email               | Mot de passe |
+| -------------- | ------------------- | ------------ |
+| Administrateur | admin@techcorp.ma   | password123  |
+| Technicien     | tech@techcorp.ma    | password123  |
+| Manager        | manager@techcorp.ma | password123  |
+| Employé        | employe@techcorp.ma | password123  |
+
+---
+
+## Notification automatique des licences
+
+La commande suivante vérifie les licences expirant dans 30 jours
+et envoie une notification email aux administrateurs :
+
+```bash
+php artisan itam:check-expiring-licenses
+```
+
+En production, ajouter au crontab : cd /path/to/itam && php artisan schedule:run >> /dev/null 2>&1
+
+---
+
+## Structure du projet
+
+app/
+├── Console/Commands/ # Commandes artisan personnalisées
+├── Http/
+│ ├── Controllers/ # Contrôleurs MVC
+│ └── Middleware/ # Middleware d'authentification et rôles
+├── Models/ # Modèles Eloquent (14 tables)
+├── Notifications/ # Notifications email
+database/
+├── migrations/ # 18 migrations
+├── seeders/ # 8 seeders avec données réalistes
+resources/views/
+├── assignments/ # Vues affectations
+├── auth/ # Vues authentification
+├── categories/ # Vues catégories
+├── layouts/ # Layout principal
+├── licenses/ # Vues licences
+├── maintenances/ # Vues maintenance
+├── products/ # Vues produits
+├── reports/ # Vues rapports (HTML + PDF)
+routes/
+├── web.php # Routes web avec middleware
+└── console.php # Tâches planifiées
+
+---
+
+## Diagrammes UML
+
+- Diagramme de classes — 14 tables
+- Diagramme de cas d'utilisation — 4 acteurs
+- Diagramme de séquence — workflow d'affectation
+
+---
+
+_Développé dans le cadre de la formation Développement Web & Logiciel_  
+_ISTA Med Elfassi — Avril 2026_
