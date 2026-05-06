@@ -13,7 +13,10 @@
                 Produits
             </h2>
             <p class="text-muted small mb-0">
-                {{ $products->total() }} produit(s) au total
+                {{ $products->total() }} produit(s)
+                @if(request('search') || request('category_id') || request('type'))
+                    <span class="text-warning">— filtrés</span>
+                @endif
             </p>
         </div>
         <a href="{{ route('products.create') }}"
@@ -21,6 +24,79 @@
             <i class="bi bi-plus-circle me-2"></i>
             Nouveau produit
         </a>
+    </div>
+
+    {{-- Search & Filters --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET"
+                  action="{{ route('products.index') }}"
+                  class="row g-3">
+
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Rechercher par nom, marque, modèle..."
+                            autofocus
+                        >
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select"
+                            name="category_id">
+                        <option value="">Toutes les catégories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}"
+                                {{ request('category_id') ==
+                                   $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" name="type">
+                        <option value="">Tous les types</option>
+                        <option value="hardware"
+                            {{ request('type') == 'hardware'
+                               ? 'selected' : '' }}>
+                            Hardware
+                        </option>
+                        <option value="software"
+                            {{ request('type') == 'software'
+                               ? 'selected' : '' }}>
+                            Software
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        Rechercher
+                    </button>
+                    @if(request('search') || request('category_id')
+                        || request('type'))
+                    <a href="{{ route('products.index') }}"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-x me-1"></i>
+                        Effacer
+                    </a>
+                    @endif
+                </div>
+
+            </form>
+        </div>
     </div>
 
     {{-- Table --}}

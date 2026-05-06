@@ -15,13 +15,42 @@ class ProductController extends Controller
     /**
      * Display a listing of all products.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'hardware', 'software', 'stock'])
-                           ->orderBy('name')
-                           ->paginate(15);
+        $query = Product::with([
+            'category', 'hardware', 'software', 'stock'
+        ]);
 
-        return view('products.index', compact('products'));
+        // Search by name, brand or model
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('brand', 'like', "%{$search}%")
+                ->orWhere('model', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            if ($request->type === 'hardware') {
+                $query->whereHas('hardware');
+            } elseif ($request->type === 'software') {
+                $query->whereHas('software');
+            }
+        }
+
+        $products   = $query->orderBy('name')->paginate(15)
+                            ->withQueryString();
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.index',
+                    compact('products', 'categories'));
     }
 
     /**
