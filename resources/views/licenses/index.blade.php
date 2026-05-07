@@ -16,11 +16,13 @@
                 {{ $licenses->count() }} licence(s) au total
             </p>
         </div>
+        @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
         <a href="{{ route('licenses.create') }}"
-           class="btn btn-primary">
+        class="btn btn-primary">
             <i class="bi bi-plus-circle me-2"></i>
             Nouvelle licence
         </a>
+        @endif
     </div>
 
     @if($licenses->isEmpty())
@@ -109,12 +111,16 @@
                                        title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="{{ route('licenses.edit',
-                                               $license) }}"
-                                       class="btn btn-outline-primary"
-                                       title="Modifier">
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
+                                    <a href="{{ route('licenses.edit', $license) }}"
+                                    class="btn btn-outline-primary"
+                                    title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    <form method="POST" ...>
+                                        ...delete button...
+                                    </form>
+                                    @endif
                                     <form method="POST"
                                           action="{{ route('licenses.destroy',
                                                      $license) }}"

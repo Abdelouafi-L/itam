@@ -19,11 +19,13 @@
                 @endif
             </p>
         </div>
+        @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
         <a href="{{ route('products.create') }}"
-           class="btn btn-primary">
+        class="btn btn-primary">
             <i class="bi bi-plus-circle me-2"></i>
             Nouveau produit
         </a>
+        @endif
     </div>
 
     {{-- Search & Filters --}}
@@ -171,21 +173,20 @@
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
 
-                                    {{-- Show --}}
+                                    {{-- Show button — everyone --}}
                                     <a href="{{ route('products.show', $product) }}"
-                                       class="btn btn-outline-info"
-                                       title="Détails">
+                                    class="btn btn-outline-info"
+                                    title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
 
-                                    {{-- Edit --}}
+                                    {{-- Edit + Delete — Admin + Tech only --}}
+                                    @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
                                     <a href="{{ route('products.edit', $product) }}"
-                                       class="btn btn-outline-primary"
-                                       title="Modifier">
+                                    class="btn btn-outline-primary"
+                                    title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-
-                                    {{-- Delete --}}
                                     <form
                                         method="POST"
                                         action="{{ route('products.destroy', $product) }}"
@@ -199,6 +200,7 @@
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                    @endif
 
                                 </div>
                             </td>

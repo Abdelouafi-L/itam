@@ -76,46 +76,87 @@ Route::middleware(['auth', 'role:Administrateur'])->group(function () {
 
 });
 
-// Routes for Administrateur and Technicien
+/*
+|--------------------------------------------------------------------------
+| Admin + Technicien + Manager — read access for Manager
+|--------------------------------------------------------------------------
+*/
+
+// Assignments — Admin + Tech (full) + Manager (read) + Employé (own)
+Route::middleware(['auth', 'role:Administrateur,Technicien,Manager,Employé'])
+    ->group(function () {
+        Route::get('/assignments',
+            [\App\Http\Controllers\AssignmentController::class, 'index'])
+            ->name('assignments.index');
+
+        Route::get('/assignments/{assignment}',
+            [\App\Http\Controllers\AssignmentController::class, 'show'])
+            ->name('assignments.show');
+    });
+
+// Assignments — create/store/return — Admin + Tech only
 Route::middleware(['auth', 'role:Administrateur,Technicien'])
     ->group(function () {
+        Route::get('/assignments/create',
+            [\App\Http\Controllers\AssignmentController::class, 'create'])
+            ->name('assignments.create');
 
-    // Equipment management (RF-06 to RF-11 — coming soon)
-    Route::get('/equipements', function () {
-        return 'Gestion des équipements — Admin + Tech';
-    })->name('equipements.index');
+        Route::post('/assignments',
+            [\App\Http\Controllers\AssignmentController::class, 'store'])
+            ->name('assignments.store');
 
-    // Assignments (RF-12 to RF-16 — coming soon)
-    Route::get('/affectations', function () {
-        return 'Affectations — Admin + Tech';
-    })->name('affectations.index');
+        Route::post('assignments/{assignment}/return',
+            [\App\Http\Controllers\AssignmentController::class, 'returnAsset'])
+            ->name('assignments.return');
 
-    // Maintenance (RF-21 to RF-23 — coming soon)
-    Route::get('/maintenance', function () {
-        return 'Maintenance — Admin + Tech';
-    })->name('maintenance.index');
+        Route::delete('/assignments/{assignment}',
+            [\App\Http\Controllers\AssignmentController::class, 'destroy'])
+            ->name('assignments.destroy');
 
-    // Category management
-    Route::resource('categories', \App\Http\Controllers\CategoryController::class);
+        // Categories
+        Route::resource('categories',
+            \App\Http\Controllers\CategoryController::class);
 
-    Route::resource('products', \App\Http\Controllers\ProductController::class);
+        // Products
+        Route::resource('products',
+            \App\Http\Controllers\ProductController::class);
 
-    Route::resource('licenses', \App\Http\Controllers\LicenseController::class);
+        // Licenses
+        Route::resource('licenses',
+            \App\Http\Controllers\LicenseController::class);
 
-    // Assignment CRUD
-    Route::resource('assignments',
-        \App\Http\Controllers\AssignmentController::class);
+        // Maintenance
+        Route::resource('maintenances',
+            \App\Http\Controllers\MaintenanceController::class);
+    });
 
-    // Return asset — RF-14
-    Route::post('assignments/{assignment}/return',
-        [\App\Http\Controllers\AssignmentController::class, 'returnAsset'])
-        ->name('assignments.return');
+// Licenses index + show — Manager read access
+Route::middleware(['auth', 'role:Administrateur,Technicien,Manager'])
+    ->group(function () {
+        Route::get('/licenses',
+            [\App\Http\Controllers\LicenseController::class, 'index'])
+            ->name('licenses.index');
 
-    // Maintenance CRUD
-    Route::resource('maintenances',
-        \App\Http\Controllers\MaintenanceController::class);
+        Route::get('/licenses/{license}',
+            [\App\Http\Controllers\LicenseController::class, 'show'])
+            ->name('licenses.show');
 
-});
+        Route::get('/maintenances',
+            [\App\Http\Controllers\MaintenanceController::class, 'index'])
+            ->name('maintenances.index');
+
+        Route::get('/maintenances/{maintenance}',
+            [\App\Http\Controllers\MaintenanceController::class, 'show'])
+            ->name('maintenances.show');
+
+        Route::get('/products',
+            [\App\Http\Controllers\ProductController::class, 'index'])
+            ->name('products.index');
+
+        Route::get('/products/{product}',
+            [\App\Http\Controllers\ProductController::class, 'show'])
+            ->name('products.show');
+    });
 
 // Routes for Administrateur and Manager
 Route::middleware(['auth', 'role:Administrateur,Manager'])
