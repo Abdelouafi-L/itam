@@ -95,6 +95,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label fw-medium">
                                 Mot de passe
+                                <span class="text-danger">*</span>
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text">
@@ -112,8 +113,15 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="form-text">
-                                Minimum 8 caractères avec lettres et chiffres.
+
+                            {{-- Password strength indicator --}}
+                            <div class="mt-2" id="strengthContainer" style="display:none">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" id="strengthBar"
+                                        role="progressbar" style="width:0%; transition: all 0.3s">
+                                    </div>
+                                </div>
+                                <small id="strengthText" class="mt-1 d-block"></small>
                             </div>
                         </div>
 
@@ -161,4 +169,62 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+const passwordInput    = document.getElementById('password');
+const strengthBar      = document.getElementById('strengthBar');
+const strengthText     = document.getElementById('strengthText');
+const strengthContainer = document.getElementById('strengthContainer');
+
+passwordInput.addEventListener('input', function () {
+    const val     = this.value;
+    const len     = val.length;
+
+    if (len === 0) {
+        strengthContainer.style.display = 'none';
+        return;
+    }
+
+    strengthContainer.style.display = 'block';
+
+    const hasLetters = /[a-zA-Z]/.test(val);
+    const hasNumbers = /[0-9]/.test(val);
+    const isAlphanumeric = hasLetters && hasNumbers;
+
+    let strength  = 0;
+    let color     = '';
+    let text      = '';
+    let width     = '';
+
+    if (len < 8) {
+        // Red — too short
+        strength = 1;
+        color    = 'bg-danger';
+        text     = '❌ Trop court — minimum 8 caractères';
+        width    = '33%';
+    } else if (len >= 8 && !isAlphanumeric) {
+        // Orange — long enough but not mixed
+        strength = 2;
+        color    = 'bg-warning';
+        text     = '⚠️ Moyen — ajoutez des chiffres et des lettres';
+        width    = '66%';
+    } else if (len >= 8 && isAlphanumeric) {
+        // Green — strong
+        strength = 3;
+        color    = 'bg-success';
+        text     = '✅ Fort — mot de passe sécurisé';
+        width    = '100%';
+    }
+
+    // Update bar
+    strengthBar.className = 'progress-bar ' + color;
+    strengthBar.style.width = width;
+    strengthText.className  = 'mt-1 d-block ' + (
+        strength === 1 ? 'text-danger' :
+        strength === 2 ? 'text-warning' : 'text-success'
+    );
+    strengthText.textContent = text;
+});
+</script>
+@endpush
 @endsection
