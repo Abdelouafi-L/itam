@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable([
     'employee_id',
-    'role_id',
     'password',
     'is_active',
 ])]
@@ -21,7 +21,7 @@ use Illuminate\Notifications\Notifiable;
 ])]
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /*
     |--------------------------------------------------------------------------
@@ -69,14 +69,6 @@ class User extends Authenticatable
         return $this->belongsTo(Employee::class);
     }
 
-    /**
-     * A User has one Role.
-     * Access role via: $user->role->name
-     */
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class);
-    }
 
     /*
     |--------------------------------------------------------------------------
@@ -137,39 +129,21 @@ class User extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Check if user has a specific role by name.
-     * Usage: $user->hasRole('Administrateur')
-     */
-    public function hasRole(string $role): bool
-    {
-        return $this->role?->name === $role;
-    }
-
-    /**
-     * Check if user is an administrator.
-     */
     public function isAdmin(): bool
     {
         return $this->hasRole('Administrateur');
     }
 
-    /**
-     * Check if user is a technician.
-     */
     public function isTechnicien(): bool
     {
         return $this->hasRole('Technicien');
     }
 
-    /**
-     * Check if user is a manager.
-     */
     public function isManager(): bool
     {
         return $this->hasRole('Manager');
-    }
-
+    }    
+    
     /*
     |--------------------------------------------------------------------------
     | Password Reset

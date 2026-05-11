@@ -56,15 +56,15 @@
                         </td>
                         <td>
                             <span class="badge {{
-                                $user->role->name === 'Administrateur'
+                                $user->getRoleNames()->first() === 'Administrateur'
                                 ? 'bg-danger'
-                                : ($user->role->name === 'Technicien'
-                                   ? 'bg-primary'
-                                   : ($user->role->name === 'Manager'
-                                      ? 'bg-warning text-dark'
-                                      : 'bg-secondary'))
+                                : ($user->getRoleNames()->first() === 'Technicien'
+                                ? 'bg-primary'
+                                : ($user->getRoleNames()->first() === 'Manager'
+                                    ? 'bg-warning text-dark'
+                                    : 'bg-secondary'))
                             }}">
-                                {{ $user->role->name ?? '—' }}
+                                {{ $user->getRoleNames()->first() ?? '—' }}
                             </span>
                         </td>
                         <td>

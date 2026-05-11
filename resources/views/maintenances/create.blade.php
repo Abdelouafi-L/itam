@@ -95,7 +95,7 @@
                                                Auth::id()) == $tech->id
                                                ? 'selected' : '' }}>
                                             {{ $tech->full_name }}
-                                            ({{ $tech->role->name }})
+                                            ({{ $tech->getRoleNames()->first() ?? '—' }})
                                         </option>
                                     @endforeach
                                 </select>

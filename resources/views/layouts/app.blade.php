@@ -192,7 +192,7 @@
                             <i class="bi bi-person-circle me-1"></i>
                             {{ Auth::user()->first_name }}
                             <span class="badge bg-secondary ms-1 small">
-                                {{ Auth::user()->role->name }}
+                                {{ Auth::user()->getRoleNames()->first() ?? '—' }}
                             </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">

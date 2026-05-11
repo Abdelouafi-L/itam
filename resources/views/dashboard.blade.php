@@ -13,7 +13,7 @@
         </h2>
         <p class="text-muted small mb-0">
             Bienvenue, {{ Auth::user()->full_name }} —
-            {{ Auth::user()->role->name }} —
+            {{ Auth::user()->getRoleNames()->first() ?? '—' }} —
             {{ now()->format('d/m/Y') }}
         </p>
     </div>
@@ -94,7 +94,7 @@
                         {{ Auth::user()->email }}
                     </p>
                     <span class="badge bg-secondary">
-                        {{ Auth::user()->role->name }}
+                        {{ Auth::user()->getRoleNames()->first() ?? '—' }}
                     </span>
                 </div>
             </div>
