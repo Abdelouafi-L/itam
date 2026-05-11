@@ -80,6 +80,21 @@
                                     <i class="bi bi-key me-2 text-muted"></i>Licences
                                 </a>
                             </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('fournisseurs.*') ? 'active' : '' }}"
+                                href="{{ route('fournisseurs.index') }}">
+                                    <i class="bi bi-truck me-2 text-muted"></i>
+                                    Fournisseurs
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('livraisons.*') ? 'active' : '' }}"
+                                href="{{ route('livraisons.index') }}">
+                                    <i class="bi bi-box-arrow-in-down me-2 text-muted"></i>
+                                    Livraisons
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     @endif

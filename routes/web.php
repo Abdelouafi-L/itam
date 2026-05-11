@@ -128,6 +128,28 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
         // Maintenance
         Route::resource('maintenances',
             \App\Http\Controllers\MaintenanceController::class);
+        
+        // Fournisseurs — RF-29 to RF-32
+        Route::resource('fournisseurs',
+            \App\Http\Controllers\FournisseurController::class);
+
+        // Livraisons — RF-33 to RF-39
+        Route::resource('livraisons',
+            \App\Http\Controllers\LivraisonController::class);
+
+        // Livraison lifecycle actions
+        Route::post('livraisons/{livraison}/receptionner',
+            [\App\Http\Controllers\LivraisonController::class, 'receptionner'])
+            ->name('livraisons.receptionner');
+
+        Route::post('livraisons/{livraison}/partielle',
+            [\App\Http\Controllers\LivraisonController::class, 'partielle'])
+            ->name('livraisons.partielle');
+
+        Route::post('livraisons/{livraison}/annuler',
+            [\App\Http\Controllers\LivraisonController::class, 'annuler'])
+            ->name('livraisons.annuler');
+
     });
 
 // Licenses index + show — Manager read access
@@ -156,6 +178,22 @@ Route::middleware(['auth', 'role:Administrateur,Technicien,Manager'])
         Route::get('/products/{product}',
             [\App\Http\Controllers\ProductController::class, 'show'])
             ->name('products.show');
+
+        Route::get('/fournisseurs',
+            [\App\Http\Controllers\FournisseurController::class, 'index'])
+            ->name('fournisseurs.index');
+
+        Route::get('/fournisseurs/{fournisseur}',
+            [\App\Http\Controllers\FournisseurController::class, 'show'])
+            ->name('fournisseurs.show');
+
+        Route::get('/livraisons',
+            [\App\Http\Controllers\LivraisonController::class, 'index'])
+            ->name('livraisons.index');
+
+        Route::get('/livraisons/{livraison}',
+            [\App\Http\Controllers\LivraisonController::class, 'show'])
+            ->name('livraisons.show');
     });
 
 // Routes for Administrateur and Manager
