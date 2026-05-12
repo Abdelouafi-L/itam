@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\Employee;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+
 
 class UserController extends Controller
 {
@@ -17,9 +18,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['employee.department', 'role'])
-                     ->orderBy('created_at', 'desc')
-                     ->get();
+        $users = User::with(['employee.department'])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
         return view('admin.users', compact('users'));
     }
@@ -64,12 +65,17 @@ class UserController extends Controller
                 'is_active'     => true,
             ]);
 
-            User::create([
+            $user = User::create([
                 'employee_id' => $employee->id,
-                'role_id'     => $validated['role_id'],
                 'password'    => Hash::make($validated['password']),
                 'is_active'   => true,
             ]);
+
+            // RF-44: Find role by ID and assign via Spatie
+            $role = \Spatie\Permission\Models\Role::findById(
+                $validated['role_id']
+            );
+            $user->assignRole($role);
         });
 
         return redirect()
@@ -82,8 +88,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $user->load(['employee.department', 'role']);
-        $roles       = Role::orderBy('name')->get();
+        $user->load(['employee.department']);
+        $roles       = \Spatie\Permission\Models\Role::orderBy('name')->get();
         $departments = Department::orderBy('name')->get();
 
         return view('admin.users-edit',
@@ -122,18 +128,20 @@ class UserController extends Controller
 
             // Update user record
             $updateData = [
-                'role_id'   => $validated['role_id'],
                 'is_active' => $validated['is_active'] ?? true,
             ];
 
-            // Only update password if provided
             if (!empty($validated['password'])) {
-                $updateData['password'] = Hash::make(
-                    $validated['password']
-                );
+                $updateData['password'] = Hash::make($validated['password']);
             }
 
             $user->update($updateData);
+
+            // RF-44: Update role via Spatie
+            $role = \Spatie\Permission\Models\Role::findById(
+                $validated['role_id']
+            );
+            $user->syncRoles([$role]);
         });
 
         return redirect()

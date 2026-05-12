@@ -177,6 +177,12 @@
                                     <i class="bi bi-sliders me-2 text-muted"></i>Configuration
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item {{ request()->routeIs('roles.*') ? 'active' : '' }}"
+                                href="{{ route('roles.index') }}">
+                                    <i class="bi bi-shield-check me-2 text-muted"></i>Rôles & Permissions
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     @endif

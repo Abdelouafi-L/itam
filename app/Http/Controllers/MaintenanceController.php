@@ -46,12 +46,10 @@ class MaintenanceController extends Controller
                              ->get();
 
         // Only technicians and admins can be assigned
-        $technicians = User::whereHas('role', function ($q) {
-            $q->whereIn('name', ['Administrateur', 'Technicien']);
-        })
-        ->where('is_active', true)
-        ->with('employee')
-        ->get();
+        $technicians = User::role(['Administrateur', 'Technicien'])
+                        ->where('is_active', true)
+                        ->with('employee')
+                        ->get();
 
         return view('maintenances.create',
                     compact('hardwares', 'technicians'));
@@ -121,12 +119,10 @@ class MaintenanceController extends Controller
     {
         $maintenance->load('hardware.product');
 
-        $technicians = User::whereHas('role', function ($q) {
-            $q->whereIn('name', ['Administrateur', 'Technicien']);
-        })
-        ->where('is_active', true)
-        ->with('employee')
-        ->get();
+        $technicians = User::role(['Administrateur', 'Technicien'])
+                        ->where('is_active', true)
+                        ->with('employee')
+                        ->get();
 
         return view('maintenances.edit',
                     compact('maintenance', 'technicians'));

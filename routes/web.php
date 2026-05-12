@@ -74,6 +74,11 @@ Route::middleware(['auth', 'role:Administrateur'])->group(function () {
         [\App\Http\Controllers\MaintenanceController::class, 'retire'])
         ->name('hardware.retire');
 
+    // Role management — RF-40 to RF-44
+    Route::resource('roles',
+        \App\Http\Controllers\RoleController::class)
+        ->except(['show']);
+
 });
 
 /*
@@ -81,18 +86,6 @@ Route::middleware(['auth', 'role:Administrateur'])->group(function () {
 | Admin + Technicien + Manager — read access for Manager
 |--------------------------------------------------------------------------
 */
-
-// Assignments — Admin + Tech (full) + Manager (read) + Employé (own)
-Route::middleware(['auth', 'role:Administrateur,Technicien,Manager,Employé'])
-    ->group(function () {
-        Route::get('/assignments',
-            [\App\Http\Controllers\AssignmentController::class, 'index'])
-            ->name('assignments.index');
-
-        Route::get('/assignments/{assignment}',
-            [\App\Http\Controllers\AssignmentController::class, 'show'])
-            ->name('assignments.show');
-    });
 
 // Assignments — create/store/return — Admin + Tech only
 Route::middleware(['auth', 'role:Administrateur,Technicien'])
@@ -128,7 +121,7 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
         // Maintenance
         Route::resource('maintenances',
             \App\Http\Controllers\MaintenanceController::class);
-        
+
         // Fournisseurs — RF-29 to RF-32
         Route::resource('fournisseurs',
             \App\Http\Controllers\FournisseurController::class);
@@ -149,7 +142,18 @@ Route::middleware(['auth', 'role:Administrateur,Technicien'])
         Route::post('livraisons/{livraison}/annuler',
             [\App\Http\Controllers\LivraisonController::class, 'annuler'])
             ->name('livraisons.annuler');
+    });
 
+// Assignments — index + show — All roles
+Route::middleware(['auth', 'role:Administrateur,Technicien,Manager,Employé'])
+    ->group(function () {
+        Route::get('/assignments',
+            [\App\Http\Controllers\AssignmentController::class, 'index'])
+            ->name('assignments.index');
+
+        Route::get('/assignments/{assignment}',
+            [\App\Http\Controllers\AssignmentController::class, 'show'])
+            ->name('assignments.show');
     });
 
 // Licenses index + show — Manager read access
