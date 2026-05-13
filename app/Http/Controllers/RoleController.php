@@ -59,7 +59,12 @@ class RoleController extends Controller
         ]);
 
         if (!empty($validated['permissions'])) {
-            $role->syncPermissions($validated['permissions']);
+            $permissionObjects = \Spatie\Permission\Models\Permission::whereIn(
+                'id', $validated['permissions']
+            )->get();
+            $role->syncPermissions($permissionObjects);
+        } else {
+            $role->syncPermissions([]);
         }
 
         return redirect()
@@ -101,7 +106,14 @@ class RoleController extends Controller
         $role->update(['name' => $validated['name']]);
 
         // RF-42: Sync permissions — removes old, adds new
-        $role->syncPermissions($validated['permissions'] ?? []);
+        if (!empty($validated['permissions'])) {
+            $permissionObjects = \Spatie\Permission\Models\Permission::whereIn(
+                'id', $validated['permissions']
+            )->get();
+            $role->syncPermissions($permissionObjects);
+        } else {
+            $role->syncPermissions([]);
+        }
 
         return redirect()
             ->route('roles.index')
