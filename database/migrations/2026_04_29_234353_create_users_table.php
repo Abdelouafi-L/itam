@@ -14,11 +14,13 @@ return new class extends Migration
      * This table stores ONLY login-specific data.
      * All person data (name, email) lives in employees table.
      *
+     * NOTE: role_id removed — roles managed by Spatie Permission
+     * via model_has_roles pivot table (RF-40 to RF-44).
+     *
      * Raw SQL equivalent:
      * CREATE TABLE users (
      *   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
      *   employee_id BIGINT UNSIGNED NOT NULL UNIQUE,
-     *   role_id BIGINT UNSIGNED NOT NULL,
      *   password VARCHAR(255) NOT NULL,
      *   last_login TIMESTAMP NULL,
      *   is_active TINYINT(1) NOT NULL DEFAULT 1,
@@ -32,24 +34,16 @@ return new class extends Migration
             $table->id();
 
             // Inheritance link — one user maps to exactly one employee
-            // unique() enforces the 1-to-1 relationship at DB level
             $table->foreignId('employee_id')
                   ->unique()
                   ->constrained('employees')
                   ->cascadeOnDelete();
 
-            // Role — every user has exactly one role
-            $table->foreignId('role_id')
-                  ->constrained('roles')
-                  ->restrictOnDelete();
-
+            // role_id removed — Spatie manages roles via pivot table
             $table->string('password');
             $table->timestamp('last_login')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamp('created_at')->nullable();
-
-            // Required by Laravel for "remember me" functionality
-            // Replaces your manual remember-me cookie logic
             $table->rememberToken();
         });
     }

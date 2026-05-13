@@ -51,9 +51,7 @@ class UserSeeder extends Seeder
         foreach ($users as $data) {
             $department = Department::where('name', $data['department'])
                                     ->first();
-            $role = Role::where('name', $data['role'])->first();
 
-            // Create employee if not exists
             $employee = Employee::firstOrCreate(
                 ['email' => $data['email']],
                 [
@@ -64,43 +62,28 @@ class UserSeeder extends Seeder
                 ]
             );
 
-            // Create user account if not exists
-            User::firstOrCreate(
+            $user = User::firstOrCreate(
                 ['employee_id' => $employee->id],
                 [
-                    'role_id'  => $role->id,
-                    'password' => Hash::make($data['password']),
-                    'is_active'=> true,
+                    'password'  => Hash::make($data['password']),
+                    'is_active' => true,
                 ]
             );
+
+            // Assign role via Spatie
+            $user->syncRoles([$data['role']]);
         }
 
-        // Create additional employees without user accounts
+        // Additional employees without user accounts
         $employees = [
-            [
-                'first_name' => 'Aicha',
-                'last_name'  => 'Mansouri',
-                'email'      => 'a.mansouri@techcorp.ma',
-                'department' => 'RH',
-            ],
-            [
-                'first_name' => 'Karim',
-                'last_name'  => 'Idrissi',
-                'email'      => 'k.idrissi@techcorp.ma',
-                'department' => 'IT',
-            ],
-            [
-                'first_name' => 'Sara',
-                'last_name'  => 'Tazi',
-                'email'      => 's.tazi@techcorp.ma',
-                'department' => 'Finance',
-            ],
-            [
-                'first_name' => 'Omar',
-                'last_name'  => 'Benjelloun',
-                'email'      => 'o.benjelloun@techcorp.ma',
-                'department' => 'Opérations',
-            ],
+            ['first_name' => 'Aicha',  'last_name' => 'Mansouri',
+            'email' => 'a.mansouri@techcorp.ma', 'department' => 'RH'],
+            ['first_name' => 'Karim',  'last_name' => 'Idrissi',
+            'email' => 'k.idrissi@techcorp.ma',  'department' => 'IT'],
+            ['first_name' => 'Sara',   'last_name' => 'Tazi',
+            'email' => 's.tazi@techcorp.ma',      'department' => 'Finance'],
+            ['first_name' => 'Omar',   'last_name' => 'Benjelloun',
+            'email' => 'o.benjelloun@techcorp.ma','department' => 'Opérations'],
         ];
 
         foreach ($employees as $data) {
