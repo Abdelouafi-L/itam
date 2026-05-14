@@ -73,20 +73,30 @@
                                     </a>
 
                                     {{-- Delete --}}
-                                    <form
-                                        method="POST"
-                                        action="{{ route('categories.destroy', $category) }}"
-                                        onsubmit="return confirm('Supprimer cette catégorie ?')"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="btn btn-outline-danger"
-                                                title="Supprimer"
-                                                {{ $category->products_count > 0 ? 'disabled' : '' }}>
+                                    @if($category->products_count > 0)
+                                        <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                style="padding: 8px 12px;"
+                                                title="{{ $category->products_count }} produit(s) lié(s) — suppression impossible"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-trigger="hover">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    @else
+                                        <form
+                                            method="POST"
+                                            action="{{ route('categories.destroy', $category) }}"
+                                            onsubmit="return confirm('Supprimer cette catégorie ?')"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger"
+                                                    title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
 
                                 </div>
                             </td>
