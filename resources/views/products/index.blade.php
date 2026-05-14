@@ -116,7 +116,6 @@
                 <table class="table table-hover mb-0">
                     <thead class="table-dark">
                         <tr>
-                            <th>#</th>
                             <th>Nom</th>
                             <th>Catégorie</th>
                             <th>Type</th>
@@ -128,9 +127,6 @@
                     <tbody>
                         @foreach($products as $product)
                         <tr>
-                            <td class="text-muted small">
-                                {{ $product->id }}
-                            </td>
                             <td class="fw-medium">
                                 <a href="{{ route('products.show', $product) }}"
                                    class="text-decoration-none">

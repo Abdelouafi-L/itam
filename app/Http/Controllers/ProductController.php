@@ -148,6 +148,7 @@ class ProductController extends Controller
             'category',
             'hardware',
             'software',
+            'software.license',
             'stock',
         ]);
 

@@ -188,6 +188,72 @@
         </div>
         @endif
 
+        @if($product->software && $product->software->license)
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent fw-bold">
+                    <i class="bi bi-key me-2 text-success"></i>
+                    Licence associée
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-1">Statut</p>
+                            <p class="fw-medium">
+                                @if($product->software->license->status === 'Active')
+                                    <span class="badge bg-success">Active</span>
+                                @elseif($product->software->license->status === 'Expirée')
+                                    <span class="badge bg-danger">Expirée</span>
+                                @else
+                                    <span class="badge bg-secondary">Résiliée</span>
+                                @endif
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-1">Sièges</p>
+                            <p class="fw-medium">
+                                {{ $product->software->license->seats_used }}
+                                /
+                                {{ $product->software->license->seats_total }}
+                                utilisés
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-1">Expiration</p>
+                            <p class="fw-medium">
+                                {{ $product->software->license->expiry_date
+                                    ? \Carbon\Carbon::parse($product->software->license->expiry_date)
+                                        ->format('d/m/Y')
+                                    : '—' }}
+                                @if($product->software->license->isExpiringSoon())
+                                    <span class="badge bg-warning text-dark ms-1">
+                                        {{ $product->software->license->days_remaining }}j
+                                    </span>
+                                @endif
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-1">Coût</p>
+                            <p class="fw-medium">
+                                {{ number_format($product->software->license->cost, 2) }}
+                                MAD
+                            </p>
+                        </div>
+                    </div>
+                    @can('licenses.view')
+                    <div class="mt-3">
+                        <a href="{{ route('licenses.show', $product->software->license) }}"
+                           class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-key me-1"></i>
+                            Voir la licence complète
+                        </a>
+                    </div>
+                    @endcan
+                </div>
+            </div>
+        </div>
+        @endif
+
     </div>
 </div>
 @endsection
