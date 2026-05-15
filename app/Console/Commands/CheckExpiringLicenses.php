@@ -38,9 +38,9 @@ class CheckExpiringLicenses extends Command
         $this->info("Found {$expiringLicenses->count()} expiring license(s).");
 
         // Find all Administrators to notify
-        $admins = User::whereHas('role', function ($query) {
-            $query->where('name', 'Administrateur');
-        })->where('is_active', true)->get();
+        $admins = User::role('Administrateur')
+                    ->where('is_active', true)
+                    ->get();
 
         if ($admins->isEmpty()) {
             $this->warn('No active administrators found to notify.');
