@@ -134,6 +134,13 @@ class AssignmentController extends Controller
                                            + $line['quantity'],
                     'updated_at'         => now(),
                 ]);
+
+                // Update license seats if product is software
+                $license = $product->software?->license;
+                if ($license) {
+                    $license->increment('seats_used', $line['quantity']);
+                }
+
             }
         });
 
@@ -182,6 +189,17 @@ class AssignmentController extends Controller
      */
     public function returnAsset(Request $request, Assignment $assignment)
     {
+
+        // Check that at least one item is being returned
+        $totalReturning = collect($request->details)
+                            ->sum('returned_qty');
+
+        if ($totalReturning <= 0) {
+            return redirect()
+                ->route('assignments.show', $assignment)
+                ->with('error', 'Veuillez saisir une quantité à retourner.');
+        }
+
         $request->validate([
             'details'                => ['required', 'array'],
             'details.*.returned_qty' => ['required', 'integer', 'min:0'],
@@ -203,18 +221,25 @@ class AssignmentController extends Controller
                     // Update detail returned quantity
                     $detail->update([
                         'returned_qty' => $detail->returned_qty
-                                          + $returnQty,
+                                            + $returnQty,
                     ]);
 
                     // Update stock — increase available, decrease assigned
                     $stock = $detail->product->stock;
                     $stock->update([
                         'quantity_available' => $stock->quantity_available
-                                               + $returnQty,
+                                                + $returnQty,
                         'quantity_assigned'  => $stock->quantity_assigned
-                                               - $returnQty,
+                                                - $returnQty,
                         'updated_at'         => now(),
                     ]);
+
+                    // Update license seats if product is software
+                    $license = $detail->product->software?->license;
+                    if ($license) {
+                        $license->decrement('seats_used', $returnQty);
+                    }
+
                 }
 
                 // Check if this detail is fully returned
