@@ -92,8 +92,6 @@ class LicenseController extends Controller
     {
         $validated = $request->validate([
             'seats_total'   => ['required', 'integer', 'min:1'],
-            'seats_used'    => ['required', 'integer', 'min:0',
-                                'lte:seats_total'],
             'purchase_date' => ['nullable', 'date'],
             'expiry_date'   => ['nullable', 'date',
                                 'after_or_equal:purchase_date'],
@@ -101,6 +99,21 @@ class LicenseController extends Controller
             'status'        => ['required',
                                 'in:Active,Expirée,Résiliée'],
         ]);
+
+        // RF-18 — seats_total cannot be reduced below seats_used
+        if ($validated['seats_total'] < $license->seats_used) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'seats_total' => 'Le nombre de sièges total ne peut pas 
+                                    être inférieur aux sièges déjà utilisés 
+                                    (' . $license->seats_used . ').'
+                ]);
+        }
+
+        // Never update seats_used from the form — it's managed by assignments
+        unset($validated['seats_used']);
 
         $license->update($validated);
 

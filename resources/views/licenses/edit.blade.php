@@ -83,16 +83,15 @@
                                 </label>
                                 <input
                                     type="number"
-                                    class="form-control
-                                           @error('seats_used')
-                                           is-invalid @enderror"
+                                    class="form-control bg-light"
                                     id="seats_used"
-                                    name="seats_used"
-                                    value="{{ old('seats_used',
-                                        $license->seats_used) }}"
-                                    min="0"
-                                    required
+                                    value="{{ $license->seats_used }}"
+                                    disabled
                                 >
+                                <div class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Géré automatiquement par les affectations — non modifiable.
+                                </div>
                                 @error('seats_used')
                                     <div class="invalid-feedback">
                                         {{ $message }}
