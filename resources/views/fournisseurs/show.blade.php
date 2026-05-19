@@ -101,8 +101,8 @@
                     </span>
                     @if(Auth::user()->isAdmin() ||
                         Auth::user()->isTechnicien())
-                    <a href="{{ route('livraisons.create') }}"
-                       class="btn btn-sm btn-outline-primary">
+                    <a href="{{ route('livraisons.create', ['fournisseur_id' => $fournisseur->id]) }}"
+                    class="btn btn-sm btn-outline-primary">
                         <i class="bi bi-plus me-1"></i>
                         Nouvelle livraison
                     </a>

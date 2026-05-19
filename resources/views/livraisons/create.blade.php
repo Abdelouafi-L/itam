@@ -8,9 +8,11 @@
         <div class="col-md-9">
 
             <div class="d-flex align-items-center mb-4">
-                <a href="{{ route('livraisons.index') }}"
-                   class="btn btn-outline-secondary btn-sm me-3">
-                    <i class="bi bi-arrow-left"></i>
+                <a href="{{ !empty($selectedFournisseurId) 
+                            ? route('fournisseurs.show', $selectedFournisseurId) 
+                            : route('livraisons.index') }}"
+                    class="btn btn-outline-secondary btn-sm me-3">
+                        <i class="bi bi-arrow-left"></i>
                 </a>
                 <h2 class="fw-bold mb-0">
                     <i class="bi bi-plus-circle me-2 text-primary"></i>
@@ -115,16 +117,16 @@
                                 </label>
                                 <select
                                     class="form-select
-                                           @error('fournisseur_id')
-                                           is-invalid @enderror"
+                                        @error('fournisseur_id')
+                                        is-invalid @enderror"
                                     name="fournisseur_id" required>
                                     <option value="">
                                         Choisir un fournisseur...
                                     </option>
                                     @foreach($fournisseurs as $f)
                                         <option value="{{ $f->id }}"
-                                            {{ old('fournisseur_id') ==
-                                               $f->id ? 'selected' : '' }}>
+                                            {{ old('fournisseur_id', $selectedFournisseurId) == $f->id 
+                                                ? 'selected' : '' }}>
                                             {{ $f->nom }}
                                         </option>
                                     @endforeach
@@ -208,9 +210,11 @@
                         <i class="bi bi-check-circle me-2"></i>
                         Créer la livraison
                     </button>
-                    <a href="{{ route('livraisons.index') }}"
-                       class="btn btn-outline-secondary">
-                        Annuler
+                    <a href="{{ !empty($selectedFournisseurId) 
+                                ? route('fournisseurs.show', $selectedFournisseurId) 
+                                : route('livraisons.index') }}"
+                        class="btn btn-outline-secondary">
+                            Annuler
                     </a>
                 </div>
 

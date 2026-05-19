@@ -57,11 +57,11 @@ class LivraisonController extends Controller
      */
     public function create()
     {
-        $fournisseurs = Fournisseur::orderBy('nom')->get();
-        $employees    = Employee::where('is_active', true)
+        $fournisseurs    = Fournisseur::orderBy('nom')->get();
+        $employees       = Employee::where('is_active', true)
                                 ->orderBy('last_name')
                                 ->get();
-        $products     = Product::with(['stock', 'category'])
+        $products        = Product::with(['stock', 'category'])
                             ->orderBy('name')
                             ->get();
 
@@ -73,9 +73,13 @@ class LivraisonController extends Controller
 
         $reference = Livraison::generateReference();
 
+        // Pre-select supplier if coming from supplier page
+        $selectedFournisseurId = request('fournisseur_id');
+
         return view('livraisons.create',
                     compact('fournisseurs', 'employees',
-                            'products', 'productsJson', 'reference'));
+                            'products', 'productsJson',
+                            'reference', 'selectedFournisseurId'));
     }
 
     /**
