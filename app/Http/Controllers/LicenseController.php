@@ -127,6 +127,16 @@ class LicenseController extends Controller
      */
     public function destroy(License $license)
     {
+        // Cannot delete if seats are still in use
+        if ($license->seats_used > 0) {
+            return redirect()
+                ->route('licenses.index')
+                ->with('error',
+                    'Impossible de supprimer cette licence — ' .
+                    $license->seats_used . ' siège(s) sont encore utilisés.'
+                );
+        }
+
         $license->delete();
 
         return redirect()

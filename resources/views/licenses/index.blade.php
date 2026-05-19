@@ -121,20 +121,30 @@
                                         ...delete button...
                                     </form>
                                     @endif
-                                    <form method="POST"
-                                          action="{{ route('licenses.destroy',
-                                                     $license) }}"
-                                          onsubmit="return confirm(
-                                              'Supprimer cette licence ?')"
-                                          class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="btn btn-outline-danger"
-                                                title="Supprimer">
+                                    @if($license->seats_used > 0)
+                                        <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                style="padding: 8px 12px;"
+                                                title="{{ $license->seats_used }} siège(s) utilisés — suppression impossible"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-trigger="hover">
                                             <i class="bi bi-trash"></i>
                                         </button>
-                                    </form>
+                                    @else
+                                        <form
+                                            method="POST"
+                                            action="{{ route('licenses.destroy', $license) }}"
+                                            onsubmit="return confirm('Supprimer cette licence ?')"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="btn btn-outline-danger"
+                                                    title="Supprimer">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
