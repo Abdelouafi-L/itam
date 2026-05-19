@@ -117,21 +117,30 @@
                                    title="Modifier">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="POST"
-                                      action="{{ route('fournisseurs.destroy',
-                                                 $fournisseur) }}"
-                                      onsubmit="return confirm(
-                                          'Supprimer ce fournisseur ?')"
-                                      class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="btn btn-outline-danger"
-                                            {{ $fournisseur->livraisons_count > 0
-                                               ? 'disabled' : '' }}>
+                                @if($fournisseur->livraisons_count > 0)
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            style="padding: 8px 12px;"
+                                            title="{{ $fournisseur->livraisons_count }} livraison(s) liée(s) — suppression impossible"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-trigger="hover">
                                         <i class="bi bi-trash"></i>
                                     </button>
-                                </form>
+                                @else
+                                    <form
+                                        method="POST"
+                                        action="{{ route('fournisseurs.destroy', $fournisseur) }}"
+                                        onsubmit="return confirm('Supprimer ce fournisseur ?')"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="btn btn-outline-danger"
+                                                title="Supprimer">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+@endif
                                 @endif
                             </div>
                         </td>
