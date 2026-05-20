@@ -53,53 +53,52 @@
                         @foreach($maintenances as $maintenance)
                         <tr>
                             <td class="fw-medium">
-                                {{ $maintenance->hardware
-                                   ->product->name ?? '—' }}
+                                {{ $maintenance->hardware->product->name ?? '—' }}
                                 <div class="small text-muted">
                                     État:
-                                    {{ $maintenance->hardware
-                                       ->condition ?? '—' }}
+                                    @if($maintenance->hardware->condition === 'Retiré')
+                                        <span class="badge bg-dark">Retiré</span>
+                                    @else
+                                        {{ $maintenance->hardware->condition ?? '—' }}
+                                    @endif
                                 </div>
                             </td>
                             <td>{{ $maintenance->type }}</td>
                             <td class="small">
-                                {{ $maintenance->technician
-                                   ->full_name ?? '—' }}
+                                {{ $maintenance->technician->full_name ?? '—' }}
                             </td>
                             <td class="small">
-                                {{ $maintenance->date
-                                   ->format('d/m/Y') }}
+                                {{ $maintenance->date->format('d/m/Y') }}
                             </td>
                             <td class="text-end small">
                                 {{ $maintenance->cost
-                                   ? number_format($maintenance->cost, 2)
-                                     . ' MAD' : '—' }}
+                                ? number_format($maintenance->cost, 2) . ' MAD'
+                                : '—' }}
                             </td>
                             <td>
                                 <span class="badge {{
                                     $maintenance->status === 'Terminée'
                                     ? 'bg-success'
                                     : ($maintenance->status === 'En cours'
-                                       ? 'bg-warning text-dark'
-                                       : 'bg-secondary')
+                                    ? 'bg-warning text-dark'
+                                    : 'bg-secondary')
                                 }}">
                                     {{ $maintenance->status }}
                                 </span>
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
-                                    <a href="{{ route('maintenances.show',
-                                               $maintenance) }}"
-                                       class="btn btn-outline-info"
-                                       title="Détails">
+                                    <a href="{{ route('maintenances.show', $maintenance) }}"
+                                    class="btn btn-outline-info"
+                                    title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    @if(Auth::user()->isAdmin() ||
-                                        Auth::user()->isTechnicien())
-                                    <a href="{{ route('maintenances.edit',
-                                               $maintenance) }}"
-                                       class="btn btn-outline-primary"
-                                       title="Modifier">
+                                    {{-- Hide modifier for retired hardware --}}
+                                    @if((Auth::user()->isAdmin() || Auth::user()->isTechnicien())
+                                        && $maintenance->hardware->condition !== 'Retiré')
+                                    <a href="{{ route('maintenances.edit', $maintenance) }}"
+                                    class="btn btn-outline-primary"
+                                    title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     @endif

@@ -19,9 +19,10 @@
             </p>
         </div>
         <div class="ms-auto d-flex gap-2">
-            @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
+            @if((Auth::user()->isAdmin() || Auth::user()->isTechnicien()) 
+                && $maintenance->hardware->condition !== 'Retiré')
             <a href="{{ route('maintenances.edit', $maintenance) }}"
-               class="btn btn-primary btn-sm">
+            class="btn btn-primary btn-sm">
                 <i class="bi bi-pencil me-1"></i> Modifier
             </a>
             @endif
@@ -107,60 +108,93 @@
 
         {{-- RF-23 Retire asset — Admin only --}}
         @if(Auth::user()->isAdmin())
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm border-danger">
-                <div class="card-header bg-danger text-white fw-bold">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Zone de danger — RF-23
-                </div>
-                <div class="card-body">
-                    <p class="text-danger fw-medium">
-                        Retirer définitivement cet équipement du parc
-                    </p>
-                    <p class="small text-muted">
-                        Cette action est <strong>irréversible</strong>.
-                        L'équipement sera décommissionné et son stock
-                        sera mis à zéro.
-                    </p>
+            @if($maintenance->hardware->condition !== 'Retiré')
+            {{-- Zone de danger — only shown if not yet retired --}}
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm border-danger">
+                    <div class="card-header bg-danger text-white fw-bold">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Zone de danger — RF-23
+                    </div>
+                    <div class="card-body">
+                        <p class="text-danger fw-medium">
+                            Retirer définitivement cet équipement du parc
+                        </p>
+                        <p class="small text-muted">
+                            Cette action est <strong>irréversible</strong>.
+                            Une unité sera décommissionnée et retirée du stock définitivement.
+                        </p>
 
-                    <form method="POST"
-                          action="{{ route('hardware.retire',
-                                     $maintenance->hardware) }}"
-                          onsubmit="return confirm(
-                              'ATTENTION: Cette action est irréversible.\n' +
-                              'Confirmez-vous le retrait définitif de cet équipement ?'
-                          )">
-                        @csrf
+                        <form method="POST"
+                            action="{{ route('hardware.retire', $maintenance->hardware) }}"
+                            onsubmit="return confirm(
+                                'ATTENTION: Cette action est irréversible.\n' +
+                                'Confirmez-vous le retrait définitif de cet équipement ?'
+                            )">
+                            @csrf
 
-                        <div class="mb-3">
-                            <label class="form-label fw-medium small">
-                                Tapez <strong>RETIRER</strong>
-                                pour confirmer
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control form-control-sm
-                                       @error('confirmation')
-                                       is-invalid @enderror"
-                                name="confirmation"
-                                placeholder="RETIRER"
-                            >
-                            @error('confirmation')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                        class="form-check-input"
+                                        name="is_assigned"
+                                        id="is_assigned"
+                                        value="1">
+                                    <label class="form-check-label small" for="is_assigned">
+                                        Cet équipement est actuellement assigné à un employé
+                                    </label>
                                 </div>
-                            @enderror
-                        </div>
+                                <div class="form-text text-muted">
+                                    Cochez si l'unité retirée était en cours d'affectation.
+                                </div>
+                            </div>
 
-                        <button type="submit"
-                                class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash me-2"></i>
-                            Retirer définitivement
-                        </button>
-                    </form>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium small">
+                                    Tapez <strong>RETIRER</strong> pour confirmer
+                                </label>
+                                <input
+                                    type="text"
+                                    class="form-control form-control-sm
+                                        @error('confirmation') is-invalid @enderror"
+                                    name="confirmation"
+                                    placeholder="RETIRER"
+                                >
+                                @error('confirmation')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-2"></i>
+                                Retirer définitivement
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+            @else
+            {{-- Already retired — show status card --}}
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm border-dark">
+                    <div class="card-header bg-dark text-white fw-bold">
+                        <i class="bi bi-slash-circle me-2"></i>
+                        Équipement retiré du parc
+                    </div>
+                    <div class="card-body text-center py-4">
+                        <i class="bi bi-slash-circle text-dark fs-1 mb-3 d-block"></i>
+                        <p class="fw-medium text-dark mb-1">
+                            Cet équipement a été retiré définitivement.
+                        </p>
+                        <p class="small text-muted">
+                            Aucune action supplémentaire n'est possible.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            @endif
         @endif
 
     </div>

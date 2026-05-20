@@ -193,14 +193,32 @@ class MaintenanceController extends Controller
         // Set condition to Endommagé and mark as retired
         // We use condition as the retirement indicator
         $hardware->update([
-            'condition' => 'Endommagé',
+            'condition' => 'Retiré',
         ]);
 
+        // Close all open maintenance records for this hardware
+        $hardware->maintenances()->where('status', '!=', 'Terminée')
+                ->update(['status' => 'Terminée']);
+
         // Zero out stock — retired hardware is no longer available
-        if ($hardware->product->stock) {
-            $hardware->product->stock->update([
-                'quantity_available' => 0,
-                'quantity_total'     => 0,
+        $stock = $hardware->product->stock;
+        if ($stock) {
+            $newTotal     = max(0, $stock->quantity_total - 1);
+            $newAvailable = $stock->quantity_available;
+            $newAssigned  = $stock->quantity_assigned;
+
+            if ($request->boolean('is_assigned')) {
+                // Unit was assigned — decrement assigned
+                $newAssigned  = max(0, $stock->quantity_assigned - 1);
+            } else {
+                // Unit was available — decrement available
+                $newAvailable = max(0, $stock->quantity_available - 1);
+            }
+
+            $stock->update([
+                'quantity_total'     => $newTotal,
+                'quantity_available' => $newAvailable,
+                'quantity_assigned'  => $newAssigned,
             ]);
         }
 
