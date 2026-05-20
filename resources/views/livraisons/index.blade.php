@@ -143,11 +143,55 @@
                             {{ $livraison->details->count() }}
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('livraisons.show',
-                                       $livraison) }}"
-                               class="btn btn-outline-info btn-sm">
+                            {{-- View button — always visible --}}
+                            <a href="{{ route('livraisons.show', $livraison) }}"
+                            class="btn btn-outline-info btn-sm"
+                            title="Voir">
                                 <i class="bi bi-eye"></i>
                             </a>
+
+                            @if(Auth::user()->isAdmin() || Auth::user()->isTechnicien())
+
+                                {{-- Edit — only En attente --}}
+                                @if($livraison->isEnAttente())
+                                    <a href="{{ route('livraisons.edit', $livraison) }}"
+                                    class="btn btn-outline-warning btn-sm"
+                                    title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                @endif
+
+                                {{-- Réceptionner — En attente or Partielle --}}
+                                @if($livraison->isEnAttente() || $livraison->statut === 'Partielle')
+                                    <form method="POST"
+                                        action="{{ route('livraisons.receptionner', $livraison) }}"
+                                        onsubmit="return confirm('Confirmer la réception complète ?')"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-outline-success btn-sm"
+                                                title="Réceptionner">
+                                            <i class="bi bi-check2-all"></i>
+                                        </button>
+                                    </form>
+                                @endif
+
+                                {{-- Annuler — En attente or Partielle --}}
+                                @if($livraison->isEnAttente() || $livraison->statut === 'Partielle')
+                                    <form method="POST"
+                                        action="{{ route('livraisons.annuler', $livraison) }}"
+                                        onsubmit="return confirm('Annuler cette livraison ?')"
+                                        class="d-inline">
+                                        @csrf
+                                        <button type="submit"
+                                                class="btn btn-outline-danger btn-sm"
+                                                title="Annuler">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                @endif
+
+                            @endif
                         </td>
                     </tr>
                     @endforeach
