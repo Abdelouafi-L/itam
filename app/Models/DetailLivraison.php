@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'livraison_id',
     'product_id',
     'quantite',
+    'quantity_received',
     'prix_unitaire',
     'notes',
 ])]

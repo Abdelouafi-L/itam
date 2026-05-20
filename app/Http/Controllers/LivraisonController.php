@@ -211,18 +211,19 @@ class LivraisonController extends Controller
 
             // Update stock for ALL detail lines
             foreach ($livraison->details as $detail) {
-                $stock = $detail->product->stock;
+                // Mark full quantity as received
+                $detail->update([
+                    'quantity_received' => $detail->quantite,
+                ]);
 
+                $stock = $detail->product->stock;
                 if ($stock) {
                     $stock->update([
-                        'quantity_total'     => $stock->quantity_total
-                                               + $detail->quantite,
-                        'quantity_available' => $stock->quantity_available
-                                               + $detail->quantite,
+                        'quantity_total'     => $stock->quantity_total + $detail->quantite,
+                        'quantity_available' => $stock->quantity_available + $detail->quantite,
                         'updated_at'         => now(),
                     ]);
                 } else {
-                    // Create stock if it doesn't exist
                     Stock::create([
                         'product_id'         => $detail->product_id,
                         'quantity_total'     => $detail->quantite,
@@ -263,13 +264,17 @@ class LivraisonController extends Controller
         DB::transaction(function () use ($request, $livraison) {
 
             foreach ($request->details as $detailId => $data) {
-                $detail  = DetailLivraison::findOrFail($detailId);
-                $qty     = (int) $data['quantite'];
+                $detail = DetailLivraison::findOrFail($detailId);
+                $qty    = (int) $data['quantite'];
 
                 if ($qty <= 0) continue;
 
-                $stock = $detail->product->stock;
+                // Track cumulative received quantity
+                $detail->update([
+                    'quantity_received' => $detail->quantity_received + $qty,
+                ]);
 
+                $stock = $detail->product->stock;
                 if ($stock) {
                     $stock->update([
                         'quantity_total'     => $stock->quantity_total + $qty,

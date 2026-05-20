@@ -116,7 +116,11 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Produit</th>
-                                <th class="text-center">Quantité</th>
+                                <th class="text-center">Commandé</th>
+                                @if(!$livraison->isEnAttente())
+                                    <th class="text-center">Reçu</th>
+                                    <th class="text-center">En attente</th>
+                                @endif
                                 <th class="text-end">Prix unitaire</th>
                                 <th class="text-end">Total</th>
                             </tr>
@@ -126,16 +130,13 @@
                             <tr>
                                 <td>
                                     <span class="fw-medium">
-                                        {{ $detail->product->name
-                                           ?? '—' }}
+                                        {{ $detail->product->name ?? '—' }}
                                     </span>
                                     <div class="small text-muted">
-                                        {{ $detail->product->category
-                                           ->name ?? '' }}
+                                        {{ $detail->product->category->name ?? '' }}
                                     </div>
                                     @if($detail->notes)
-                                        <div class="small text-muted
-                                                    fst-italic">
+                                        <div class="small text-muted fst-italic">
                                             {{ $detail->notes }}
                                         </div>
                                     @endif
@@ -143,31 +144,48 @@
                                 <td class="text-center">
                                     {{ $detail->quantite }}
                                 </td>
+                                @if(!$livraison->isEnAttente())
+                                    <td class="text-center">
+                                        <span class="badge bg-success">
+                                            {{ $detail->quantity_received }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @php
+                                            $pending = $detail->quantite - $detail->quantity_received;
+                                        @endphp
+                                        @if($pending > 0)
+                                            <span class="badge bg-warning text-dark">
+                                                {{ $pending }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check"></i>
+                                            </span>
+                                        @endif
+                                    </td>
+                                @endif
                                 <td class="text-end small">
                                     {{ $detail->prix_unitaire
-                                       ? number_format(
-                                           $detail->prix_unitaire, 2)
-                                         . ' MAD'
-                                       : '—' }}
+                                    ? number_format($detail->prix_unitaire, 2) . ' MAD'
+                                    : '—' }}
                                 </td>
                                 <td class="text-end small fw-medium">
                                     {{ $detail->prix_unitaire
-                                       ? number_format(
-                                           $detail->total, 2) . ' MAD'
-                                       : '—' }}
+                                    ? number_format($detail->total, 2) . ' MAD'
+                                    : '—' }}
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                         <tfoot class="table-light fw-bold">
                             <tr>
-                                <td colspan="3" class="text-end">
+                                <td colspan="{{ $livraison->isEnAttente() ? 3 : 5 }}"
+                                    class="text-end">
                                     Total livraison:
                                 </td>
                                 <td class="text-end">
-                                    {{ number_format(
-                                        $livraison->details->sum('total'),
-                                        2) }} MAD
+                                    {{ number_format($livraison->details->sum('total'), 2) }} MAD
                                 </td>
                             </tr>
                         </tfoot>
