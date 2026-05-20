@@ -88,34 +88,34 @@ class LivraisonController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'fournisseur_id'    => ['required', 'exists:fournisseurs,id'],
-            'signataire_id'     => ['required', 'exists:employees,id'],
-            'reference_interne' => ['required', 'string', 'max:100',
-                                    'unique:livraisons,reference_interne'],
-            'bon_de_livraison'  => ['required', 'string', 'max:100'],
-            'date_livraison'    => ['required', 'date'],
-            'notes'             => ['nullable', 'string', 'max:1000'],
-            'products'          => ['required', 'array', 'min:1'],
-            'products.*.id'     => ['required', 'exists:products,id'],
+            'fournisseur_id'          => ['required', 'exists:fournisseurs,id'],
+            'signataire_id'           => ['required', 'exists:employees,id'],
+            'bon_de_livraison'        => ['required', 'string', 'max:100'],
+            'date_livraison'          => ['required', 'date'],
+            'notes'                   => ['nullable', 'string', 'max:1000'],
+            'products'                => ['required', 'array', 'min:1'],
+            'products.*.id'           => ['required', 'exists:products,id'],
             'products.*.quantite'     => ['required', 'integer', 'min:1'],
             'products.*.prix_unitaire'=> ['nullable', 'numeric', 'min:0'],
             'products.*.notes'        => ['nullable', 'string', 'max:500'],
         ]);
 
-        DB::transaction(function () use ($request) {
+        $livraison = null;
 
-            // RF-33: Create delivery header — status: En attente
+        DB::transaction(function () use ($request, &$livraison) {
+
+            // Always generate reference server-side — never trust user input
             $livraison = Livraison::create([
                 'fournisseur_id'    => $request->fournisseur_id,
                 'signataire_id'     => $request->signataire_id,
-                'reference_interne' => $request->reference_interne,
+                'reference_interne' => Livraison::generateReference(),
                 'bon_de_livraison'  => $request->bon_de_livraison,
                 'date_livraison'    => $request->date_livraison,
                 'statut'            => 'En attente',
                 'notes'             => $request->notes,
+                'created_at'        => now(),
             ]);
 
-            // RF-34: Add detail lines
             foreach ($request->products as $line) {
                 DetailLivraison::create([
                     'livraison_id'  => $livraison->id,
@@ -128,13 +128,8 @@ class LivraisonController extends Controller
         });
 
         return redirect()
-            ->route('livraisons.show',
-                    Livraison::where('reference_interne',
-                                     $request->reference_interne)
-                             ->first())
-            ->with('success',
-                'Livraison créée avec succès. ' .
-                'En attente de réception.');
+            ->route('livraisons.show', $livraison)
+            ->with('success', 'Livraison créée avec succès. En attente de réception.');
     }
 
     /**

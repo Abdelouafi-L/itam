@@ -50,20 +50,12 @@
                                     <span class="text-danger">*</span>
                                 </label>
                                 <input type="text"
-                                    class="form-control
-                                           @error('reference_interne')
-                                           is-invalid @enderror"
-                                    name="reference_interne"
-                                    value="{{ old('reference_interne',
-                                        $reference) }}"
-                                    required>
-                                @error('reference_interne')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                                <div class="form-text">
-                                    Généré automatiquement
+                                    class="form-control bg-light"
+                                    value="{{ old('reference_interne', $reference) }}"
+                                    readonly>
+                                <div class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Générée automatiquement par le système.
                                 </div>
                             </div>
                             <div class="col-md-4">

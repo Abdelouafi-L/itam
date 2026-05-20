@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'date_livraison',
     'statut',
     'notes',
+    'created_at',
 ])]
 class Livraison extends Model
 {
@@ -85,12 +86,16 @@ class Livraison extends Model
     public static function generateReference(): string
     {
         $year = now()->year;
-        $last = static::whereYear('created_at', $year)
-                      ->orderByDesc('id')
-                      ->first();
+        $prefix = 'LIV-' . $year . '-';
+        
+        $last = static::where('reference_interne', 'like', $prefix . '%')
+                    ->orderByDesc('reference_interne')
+                    ->first();
 
-        $number = $last ? (int) substr($last->reference_interne, -3) + 1 : 1;
+        $number = $last 
+            ? (int) substr($last->reference_interne, strlen($prefix)) + 1 
+            : 1;
 
-        return 'LIV-' . $year . '-' . str_pad($number, 3, '0', STR_PAD_LEFT);
+        return $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 }
