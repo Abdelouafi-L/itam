@@ -126,6 +126,18 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        // Protect core system roles — never deletable
+        $protectedRoles = ['Administrateur', 'Technicien', 'Manager', 'Employé'];
+        
+        if (in_array($role->name, $protectedRoles)) {
+            return redirect()
+                ->route('roles.index')
+                ->with('error',
+                    'Impossible de supprimer le rôle "' . $role->name . 
+                    '" — c\'est un rôle système protégé.'
+                );
+        }
+
         if ($role->users()->count() > 0) {
             return redirect()
                 ->route('roles.index')
