@@ -380,38 +380,6 @@
 
                         <hr class="my-4">
 
-                        {{-- Stock --}}
-                        <h6 class="fw-bold text-muted text-uppercase
-                                   small mb-3">
-                            Stock initial
-                        </h6>
-
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label for="quantity_total"
-                                       class="form-label fw-medium">
-                                    Quantité totale
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    class="form-control
-                                           @error('quantity_total')
-                                           is-invalid @enderror"
-                                    id="quantity_total"
-                                    name="quantity_total"
-                                    value="{{ old('quantity_total', 1) }}"
-                                    min="0"
-                                    required
-                                >
-                                @error('quantity_total')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-
                         <div class="d-flex gap-2">
                             <button type="submit"
                                     class="btn btn-primary">

@@ -262,46 +262,34 @@
 
                         <hr class="my-4">
 
-                        {{-- Stock --}}
-                        <h6 class="fw-bold text-muted text-uppercase
-                                   small mb-3">
+                        {{-- Stock — read only, managed by Livraisons --}}
+                        <h6 class="fw-bold text-muted text-uppercase small mb-3">
                             Stock
                         </h6>
                         <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label class="form-label fw-medium">
-                                    Quantité totale
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input type="number"
-                                    class="form-control
-                                           @error('quantity_total')
-                                           is-invalid @enderror"
-                                    name="quantity_total"
-                                    value="{{ old('quantity_total',
-                                        $product->stock->quantity_total
-                                        ?? 0) }}"
-                                    min="0" required
-                                >
-                                @error('quantity_total')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
                             @if($product->stock)
-                            <div class="col-md-4">
-                                <label class="form-label fw-medium">
-                                    Actuellement assigné
-                                </label>
-                                <input type="text" class="form-control"
-                                    value="{{ $product->stock->quantity_assigned }}"
-                                    disabled>
-                                <div class="form-text">
-                                    Non modifiable directement
-                                </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Total</label>
+                                <input type="text" class="form-control bg-light"
+                                    value="{{ $product->stock->quantity_total }}" disabled>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Disponible</label>
+                                <input type="text" class="form-control bg-light"
+                                    value="{{ $product->stock->quantity_available }}" disabled>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-medium">Assigné</label>
+                                <input type="text" class="form-control bg-light"
+                                    value="{{ $product->stock->quantity_assigned }}" disabled>
                             </div>
                             @endif
+                            <div class="col-12 mt-2">
+                                <div class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Le stock est géré automatiquement par les livraisons — non modifiable ici.
+                                </div>
+                            </div>
                         </div>
 
                         <div class="d-flex gap-2">

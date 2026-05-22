@@ -65,10 +65,10 @@ class ProductController extends Controller
     /**
      * Store a newly created product in storage.
      * Creates Product + Hardware/Software + Stock in one transaction.
+     * Stock starts at 0 — units only enter through validated deliveries.
      */
     public function store(Request $request)
     {
-        // Step 1 — Validate common product fields
         $validated = $request->validate([
             'category_id'  => ['required', 'exists:categories,id'],
             'name'         => ['required', 'string', 'max:255'],
@@ -90,11 +90,10 @@ class ProductController extends Controller
             'publisher'      => ['nullable', 'string', 'max:100'],
             'release_date'   => ['nullable', 'date'],
 
-            // Stock
-            'quantity_total' => ['required', 'integer', 'min:0'],
+            // NOTE: No quantity_total here — stock starts at 0
+            // Units only enter through validated Livraisons (RF-35)
         ]);
 
-        // Step 2 — Create everything in one transaction
         DB::transaction(function () use ($validated) {
 
             // Create the parent Product record
@@ -109,10 +108,10 @@ class ProductController extends Controller
             // Create Hardware or Software child record
             if ($validated['type'] === 'hardware') {
                 Hardware::create([
-                    'product_id'   => $product->id,
-                    'warranty_date'=> $validated['warranty_date'] ?? null,
-                    'condition'    => $validated['condition'] ?? 'Neuf',
-                    'purchase_date'=> $validated['purchase_date'] ?? null,
+                    'product_id'    => $product->id,
+                    'warranty_date' => $validated['warranty_date'] ?? null,
+                    'condition'     => $validated['condition'] ?? 'Neuf',
+                    'purchase_date' => $validated['purchase_date'] ?? null,
                 ]);
             } else {
                 Software::create([
@@ -125,18 +124,19 @@ class ProductController extends Controller
                 ]);
             }
 
-            // Create Stock record — every product must have one
+            // Stock starts at 0 — never populated manually
+            // Increases only through Livraison → Réceptionnée (RF-35)
             Stock::create([
                 'product_id'         => $product->id,
-                'quantity_total'     => $validated['quantity_total'],
-                'quantity_available' => $validated['quantity_total'],
+                'quantity_total'     => 0,
+                'quantity_available' => 0,
                 'quantity_assigned'  => 0,
             ]);
         });
 
         return redirect()
             ->route('products.index')
-            ->with('success', 'Produit créé avec succès.');
+            ->with('success', 'Produit créé avec succès. Créez une livraison pour approvisionner le stock.');
     }
 
     /**
@@ -168,6 +168,7 @@ class ProductController extends Controller
 
     /**
      * Update the specified product in storage.
+     * NOTE: Stock is NOT updated here — only through Livraisons.
      */
     public function update(Request $request, Product $product)
     {
@@ -191,8 +192,7 @@ class ProductController extends Controller
             'publisher'      => ['nullable', 'string', 'max:100'],
             'release_date'   => ['nullable', 'date'],
 
-            // Stock
-            'quantity_total' => ['required', 'integer', 'min:0'],
+            // NOTE: No quantity_total — stock managed by Livraisons only
         ]);
 
         DB::transaction(function () use ($validated, $product) {
@@ -223,14 +223,8 @@ class ProductController extends Controller
                 ]);
             }
 
-            // Update stock total
-            // Recalculate available = total - assigned
-            $stock = $product->stock;
-            $stock->update([
-                'quantity_total'     => $validated['quantity_total'],
-                'quantity_available' => $validated['quantity_total']
-                                        - $stock->quantity_assigned,
-            ]);
+            // Stock is intentionally NOT updated here
+            // All stock changes go through Livraisons (RF-35/RF-36)
         });
 
         return redirect()
@@ -243,7 +237,6 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Check if product has active assignments
         if ($product->assignmentDetails()->count() > 0) {
             return redirect()
                 ->route('products.index')
